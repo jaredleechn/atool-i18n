@@ -1,6 +1,5 @@
 import { sync } from 'glob';
 import { join } from 'path';
-import { readFileSync } from 'fs';
 import co from 'co';
 import postTranslate from './postTranslate';
 import save from './save';
@@ -22,15 +21,15 @@ export default function translate(options) {
   log.info('summary', 'summarying json files...');
   const summary = arrayToObject(reduceJsonFiles(join(cwd, source)), 'id');
 
-  co(async function () {
-    const success = await postTranslate(summary);
+  co(async function middlewares() {
+    await postTranslate(summary);
 
     const result = await fetchTranslate(pkg.name);
 
     const defaultMap = {
       en: 'en.json',
       cn: 'cn.json',
-    }
+    };
 
     const localFiles = Object.keys(defaultMap).map(lang => ({
       lang,
@@ -42,5 +41,4 @@ export default function translate(options) {
 
     save(newDest);
   });
-
 }
