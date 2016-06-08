@@ -4,8 +4,8 @@ const program = require('commander');
 
 program
   .version(require('../package.json').version, '-v, --version')
-  .option('--source <dir>', '', 'messages/todo.json')
-  .option('--dest <dir>', '', 'src/locales')
+  .option('--source <dir>', '', 'i18n-messages')
+  .option('--dest <dir>', '', 'locales')
   .parse(process.argv);
 
 program.cwd = process.cwd();
