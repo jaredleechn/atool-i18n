@@ -11,6 +11,13 @@ export function arrayToObject(arr, key) {
   }), {});
 }
 
+export function objectToArray(obj, key) {
+  return Object.keys(obj).map(each => ({
+    value: obj[each],
+    [key]: each,
+  }));
+}
+
 export function isRelative(filepath) {
   return filepath.charAt(0) === '.';
 }
@@ -23,26 +30,30 @@ export function isProvided(filepath) {
   return existsSync(join(__dirname, 'plugins', `${filepath}.js`));
 }
 
-export function format(target) {
+export function format(target, prefix) {
+  const before = prefix || '';
   if (Array.isArray(target)) {
-    return target.map(value => ({ value }));
+    return target.reduce((collection, item) => ({
+      ...collection,
+      [`${item} - ${before}`]: item,
+    }), {});
+  } else if (target && target.constructor === Object) {
+    return Object.keys(target).reduce((collection, key) => ({
+      ...collection,
+      [`${target[key]} - ${before} ${key}`]: target[key],
+    }), {});
   }
-  const keys = Object.keys(target);
-  return keys.map(item => ({
-    value: target[item],
-    name: `${target[item]} - from ${item}`,
-  }));
+  return {
+    [`${target} - ${before}`]: target,
+  };
 }
 
 export async function select(target, message) {
-  if (typeof(target) === 'string') {
-    return target;
-  }
-  const answer = await(inquirer.prompt({
+  const answer = await (inquirer.prompt({
     name: 'value',
     type: 'list',
     message,
-    choices: format(target),
+    choices: objectToArray(target, 'name'),
   }));
   return answer.value;
 }
