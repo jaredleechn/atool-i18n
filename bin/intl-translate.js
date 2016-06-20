@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 
 const program = require('commander');
+const path = require('path');
 
 program
   .version(require('../package.json').version, '-v, --version')
-  .option('--source <dir>', '', 'i18n-messages')
-  .option('--plugins <name|file>', 'defines the plugins should be used')
-  .option('--dest <dir>', '', 'locales')
+  .option('--config <dir>', 'where is the config file', 'intl.config.js')
   .parse(process.argv);
 
-require('../lib/translate')({
-  source: program.source,
-  plugins: program.plugins ? program.plugins.split(',') : [],
-  dest: program.dest,
+const defaultOptions = {
   cwd: process.cwd(),
-});
+};
+
+const configFunc = program.config ? require(path.join(process.cwd(), program.config)) : false;
+
+require('../lib/translate')(configFunc
+  ? configFunc(defaultOptions)
+  : defaultOptions
+);

@@ -30,6 +30,10 @@ export function isProvided(filepath) {
   return existsSync(join(__dirname, 'plugins', `${filepath}.js`));
 }
 
+export function isObject(something) {
+  return something && something.constructor === Object;
+}
+
 export function format(target, prefix) {
   const before = prefix || '';
   if (Array.isArray(target)) {
@@ -37,7 +41,7 @@ export function format(target, prefix) {
       ...collection,
       [`${item} - ${before}`]: item,
     }), {});
-  } else if (target && target.constructor === Object) {
+  } else if (isObject(target)) {
     return Object.keys(target).reduce((collection, key) => ({
       ...collection,
       [`${target[key]} - ${before} ${key}`]: target[key],
@@ -48,7 +52,7 @@ export function format(target, prefix) {
   };
 }
 
-export async function select(target, message) {
+export async function select(target, message = 'pick the best one') {
   const answer = await (inquirer.prompt({
     name: 'value',
     type: 'list',
@@ -56,4 +60,9 @@ export async function select(target, message) {
     choices: objectToArray(target, 'name'),
   }));
   return answer.value;
+}
+
+
+export function maxKeys(arr) {
+  return Object.keys(arr[0]);
 }
