@@ -1,5 +1,6 @@
 import log from 'spm-log';
 import { join } from 'path';
+import { existsSync } from 'fs';
 
 function fetchOne(record, local) {
   const langs = Object.keys(record);
@@ -44,16 +45,19 @@ export default async function pick(result, query, context) {
     const file = maxKeys(result)
       .reduce((collect, lang) => ({
         ...collect,
-        [lang]: require(join(context.cwd, local, lang)),
+        [lang]: existsSync(join(context.cwd, local, lang))
+          ? require(join(context.cwd, local, lang))
+          : {},
       }), {});
     pickResource = fetchLocal(result, file);
   }
 
   for (const item of pickResource) {
     const langs = Object.keys(item);
+    log.warn('picking best translation', item.id);
     for (const lang of langs) {
       if (isObject(item[lang])) {
-        item[lang] = await select(item[lang]);
+        item[lang] = await select(item[lang], `picking ${lang}`);
       }
     }
   }

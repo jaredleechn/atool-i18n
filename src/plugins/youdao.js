@@ -10,21 +10,32 @@ async function trans(word) {
   return res;
 }
 
-async function fillRecord(defaultMessage, obj, langs, formater) {
+async function fillRecord(base, obj, langs, defaultKey) {
   const res = {
     ...obj,
   };
   for (const lang of langs) {
-    res[lang] = formater(await trans(defaultMessage, lang), 'from youdao');
+    if (defaultKey === lang) {
+      res[lang] = res.defautMessage;
+    } else {
+      res[lang] = res[lang] || {};
+      for (const key of base) {
+        const resp = await trans(obj[key], lang);
+        res[lang][`${resp} - from youdao based on ${key}`] = resp;
+      }
+    }
   }
   return res;
 }
 
-export default async function google(result, query, context) {
-  log.info('youdao task', 'translating');
+export default async function youdao(result, query) {
+  const langs = query.langs || ['en', 'cn'];
+  const base = [query.key || 'id', 'defaultMessage'];
+  const defaultKey = query.default;
+  log.info('youdao task', `translating langs of ${langs}`);
 
   const translation = await Promise.all(
-    result.map(obj => fillRecord(obj.defaultMessage, obj, query.langs, context.format))
+    result.map(obj => fillRecord(base, obj, langs, defaultKey))
   );
 
   return translation;
