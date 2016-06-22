@@ -16,12 +16,14 @@ async function fillRecord(base, obj, langs, defaultKey) {
   };
   for (const lang of langs) {
     if (defaultKey === lang) {
-      res[lang] = res.defautMessage;
+      res[lang] = res.defaultMessage;
     } else {
       res[lang] = res[lang] || {};
       for (const key of base) {
-        const resp = await trans(obj[key], lang);
-        res[lang][`${resp} - from youdao based on ${key}`] = resp;
+        const resps = await trans(obj[key], lang);
+        resps.forEach(resp => {
+          res[lang][`${resp} - from youdao based on ${key}`] = resp;
+        });
       }
     }
   }
