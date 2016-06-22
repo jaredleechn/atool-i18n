@@ -4,7 +4,7 @@ const program = require('commander');
 const path = require('path');
 
 program
-  .version(require('../package.json').version, '-v, --version')
+  .version(require(path.join(__dirname, '../package.json')).version, '-v, --version')
   .option('--config <dir>', 'where is the config file, default is intl.config.js', 'intl.config.js')
   .parse(process.argv);
 
