@@ -17,10 +17,12 @@ automatical workflow to solve intl resource load problem.
 
 
 - setup
+
   ```bash
   $ npm i intl-translate --save-dev
   ```
 - `intl.config.js`
+
   ```js
   module.exports = function (config) {
     return Object.assign({},
@@ -36,6 +38,7 @@ automatical workflow to solve intl resource load problem.
   };
   ```
 - run
+
   ```bash
   $ node_modules/.bin/intl-translate
   ```
