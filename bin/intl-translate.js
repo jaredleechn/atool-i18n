@@ -5,7 +5,7 @@ const path = require('path');
 
 program
   .version(require('../package.json').version, '-v, --version')
-  .option('--config <dir>', 'where is the config file', 'intl.config.js')
+  .option('--config <dir>', 'where is the config file, default is intl.config.js', 'intl.config.js')
   .parse(process.argv);
 
 const defaultOptions = {
