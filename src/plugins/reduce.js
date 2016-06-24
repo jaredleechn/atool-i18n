@@ -1,17 +1,25 @@
 import log from 'spm-log';
 import { join } from 'path';
-import { existsSync } from 'fs';
 
 function fetchOne(record, local) {
   const langs = Object.keys(record);
   const result = record;
   langs.forEach(lang => {
-    if (local[lang] && local[lang][record.id] && record[lang].constructor === 'Object') {
+    if (local[lang] && local[lang][record.id] && record[lang].constructor === Object) {
       const des = `${local[lang][record.id]} - from local`;
       result[lang][des] = local[lang][record.id];
     }
   });
   return record;
+}
+
+function exists(path) {
+  try {
+    require.resolve(path);
+  } catch (e) {
+    return false;
+  }
+  return true;
 }
 
 function fetchLocal(result, local) {
@@ -45,7 +53,7 @@ export default async function pick(result, query, context) {
     const file = maxKeys(result)
       .reduce((collect, lang) => ({
         ...collect,
-        [lang]: existsSync(join(context.cwd, local, lang))
+        [lang]: exists(join(context.cwd, local, lang))
           ? require(join(context.cwd, local, lang))
           : {},
       }), {});
